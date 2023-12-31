@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon-16x16.png" type="image/x-icon">
+
+    <title>GPA Calculator</title>
+    <style>
+        body {
+            font-family: 'Tilt Neon', sans-serif;
+            font-size: 18px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: #2da831;
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        input,
+        select {
+            width: calc(50% - 10px);
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        select {
+            width: calc(50% - 10px);
+        }
+        
+        .calculate-button {
+            padding: 12px;
+            background-color: #2da831;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .calculate-button:hover {
+            background-color: #096a0e;
+        }
+        
+        #result {
+            color: #2da831;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        .view-graph-button {
+            padding: 12px;
+            font-size: 14px;
+            background-color: #2da831;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .view-graph-button:hover {
+            background-color: #096a0e;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>GPA Calculator</h2>
+
+    <!-- Form to input grades and select grading systems -->
+    <form id="gpaForm">
+        <label for="grade1">Class 1 Grade:</label>
+        <input type="number" id="grade1" min="0" max="100" required>
+        <select id="gradingSystem1">
+            <option value="standard">Standard (0-100)</option>
+            <option value="SB">Standards-Based (0-5)</option>
+        </select>
+
+        <label for="grade2">Class 2 Grade:</label>
+        <input type="number" id="grade2" min="0" max="100" required>
+        <select id="gradingSystem2">
+            <option value="standard">Standard (0-100)</option>
+            <option value="SB">Standards-Based (0-5)</option>
+        </select>
+
+        <label for="grade3">Class 3 Grade:</label>
+        <input type="number" id="grade3" min="0" max="100" required>
+        <select id="gradingSystem3">
+            <option value="standard">Standard (0-100)</option>
+            <option value="SB">Standards-Based (0-5)</option>
+        </select>
+
+        <label for="grade4">Class 4 Grade:</label>
+        <input type="number" id="grade4" min="0" max="100" required>
+        <select id="gradingSystem4">
+            <option value="standard">Standard (0-100)</option>
+            <option value="SB">Standards-Based (0-5)</option>
+        </select>
+
+        <label for="grade5">Class 5 Grade:</label>
+        <input type="number" id="grade5" min="0" max="100" required>
+        <select id="gradingSystem5">
+            <option value="standard">Standard (0-100)</option>
+            <option value="SB">Standards-Based (0-5)</option>
+        </select>
+
+        <label for="grade6">Class 6 Grade:</label>
+        <input type="number" id="grade6" min="0" max="100" required>
+        <select id="gradingSystem6">
+            <option value="standard">Standard (0-100)</option>
+            <option value="SB">Standards-Based (0-5)</option>
+        </select>
+
+        <label for="grade7">Class 7 Grade:</label>
+        <input type="number" id="grade7" min="0" max="100" required>
+        <select id="gradingSystem7">
+            <option value="standard">Standard (0-100)</option>
+            <option value="SB">Standards-Based (0-5)</option>
+        </select>
+
+        <!-- Button to trigger GPA calculation -->
+        <br>
+        <button type="button" class="calculate-button" onclick="calculateGPA()">Calculate GPA</button>
+    </form>
+        <br>
+        <a href="graph.html" class="view-graph-button">View GPA Over Time</a>
+        <br>
+        <br>
+        <button id="downloadReportButton" class="calculate-button" onclick="downloadPdfReport()">Download Report</button>
+
+    <!-- Display the calculated GPA -->
+    <h3>GPA Records<span id="result"></span></h3>
+
+    <script>
+        // Function to calculate GPA and save the record
+        async function calculateGPA() {
+            // Get grades and grading systems from input fields
+            const grades = [];
+            const gradingSystems = [];
+
+            for (let i = 1; i <= 7; i++) {
+                const grade = parseFloat(document.getElementById(`grade${i}`).value);
+                const gradingSystem = document.getElementById(`gradingSystem${i}`).value;
+
+                grades.push(grade);
+                gradingSystems.push(gradingSystem);
+            }
+
+            // Replace with your user authentication logic
+            const userId = 'user123';
+
+            // Send a POST request to save GPA record
+            const response = await fetch('http://localhost:50000/api/saveGPA', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId, grades, gradingSystems }),
+            });
+
+            // Display success or error message
+            if (response.ok) {
+                alert('GPA record saved successfully');
+                // Retrieve and display GPA records after saving
+                getGPA();
+                
+            } else {
+                alert('Error saving GPA record');
+            }
+
+            gpaForm.reset();
+        }
+
+        // Function to retrieve and display GPA records
+        async function getGPA() {
+            // Replace with your user authentication logic
+            const userId = 'user123';
+
+            // Send a GET request to retrieve GPA records
+            const response = await fetch(`http://localhost:50000/api/getGPA/${userId}`);
+            const data = await response.json();
+
+            // Display retrieved GPA records
+            if (response.ok) {
+                displayGPA(data);
+            } else {
+                alert('Error retrieving GPA records');
+            }
+        }
+
+        // Function to display GPA records in the result container
+        function displayGPA(records) {
+            const resultContainer = document.getElementById("result");
+            resultContainer.innerHTML = '';
+
+            // Iterate through records and display them
+            records.forEach(record => {
+                const date = new Date(record.date).toLocaleDateString();
+        
+                // Check if the GPA is a number before formatting
+                const gpa = typeof record.gpa === 'number' ? record.gpa.toFixed(2) : 'N/A';
+        
+                const recordElement = document.createElement('p');
+                recordElement.textContent = `Date: ${date}, GPA: ${gpa}`;
+        
+                resultContainer.appendChild(recordElement);
+            });
+
+        }
+
+        // Function to download PDF report
+        function downloadPdfReport() {
+            // Fetch JSON data from the server
+            fetch('/api/getGPA/user123') // Replace with your actual API endpoint
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        // Create a new jsPDF instance
+                        const pdf = new jsPDF();
+                        
+                        // Set font and style
+                        pdf.setFont('helvetica');
+                        pdf.setFontSize(16);
+                        pdf.setTextColor(0, 0, 0); // Set text color to black
+                        
+                        // Set document properties
+                        pdf.setProperties({
+                            title: 'GPA Report',
+                            subject: 'GPA Report',
+                        });
+                        
+                        // Add headers and separator
+                        pdf.text('GPA Report', 20, 20);
+                        pdf.text('Generated on: ' + new Date().toLocaleString(), 20, 30);
+                        pdf.line(20, 40, 190, 40);
+                        
+                        // Define margin and line height
+                        const margin = 20;
+                        const lineHeight = 10;
+                        
+                        // Iterate over the JSON data and add it to the PDF
+                        data.forEach((record, index) => {
+                            // Format the date to display only the date portion
+                            const formattedDate = new Date(record.date).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                            });
+        
+                            // Add date and GPA with improved spacing
+                            pdf.text(`Date of Calculation: ${formattedDate}`, margin, 50 + index * 50);
+                            pdf.text(`GPA: ${record.gpa.toFixed(2)}`, margin, 60 + index * 50);
+        
+                            // Add separator line between records
+                            pdf.line(margin, 70 + index * 50, 190 - margin, 70 + index * 50);
+                        });
+        
+                        // Save the PDF with a specific name
+                        pdf.save('GPA_Report.pdf');
+                    } else {
+                        console.error('No data available for PDF download');
+                        // Provide user-friendly feedback or handle the case where no data is available
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching GPA records:', error);
+                    // Provide user-friendly feedback or handle the error accordingly
+                });
+        }
+                
+        
+        
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js"></script>
+
+</body>
+</html>
